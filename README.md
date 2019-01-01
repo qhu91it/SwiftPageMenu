@@ -125,6 +125,14 @@ struct RoundRectPagerOption: PageMenuOptions {
 }
 ```
 
+## Installation
+### Cocoapods
+Add this to your `Podfile`:
+```ruby
+pod 'SwiftPageMenu', :git => 'https://github.com/qhu91it/SwiftPageMenu.git'
+```
+And run then `pod install`
+
 ### Carthage
 
 To integrate SwiftPageMenu into your Xcode project using Carthage, specify it in your Cartfile:
