@@ -24,6 +24,14 @@ class TabMenuItemCell: UICollectionViewCell {
 
         return label
     }()
+    private var itemIcon: UIImageView = {
+        let imgView = UIImageView()
+        imgView.contentMode = .scaleAspectFit
+        imgView.backgroundColor = .clear
+        return imgView
+    }()
+    
+    private var iconWidthConstraint: NSLayoutConstraint!
 
     var decorationView: UIView?
 
@@ -65,20 +73,33 @@ class TabMenuItemCell: UICollectionViewCell {
 
         self.backgroundColor = .clear
 
+        self.contentView.addSubview(self.itemIcon)
+        self.itemIcon.translatesAutoresizingMaskIntoConstraints = false
+        self.itemIcon.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 4).isActive = true
+        self.iconWidthConstraint = self.itemIcon.widthAnchor.constraint(equalToConstant: 20)
+        self.iconWidthConstraint.isActive = true
+        self.itemIcon.heightAnchor.constraint(equalTo: self.itemIcon.widthAnchor).isActive = true
+        self.itemIcon.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor).isActive = true
+        
         self.contentView.addSubview(self.itemLabel)
         self.itemLabel.translatesAutoresizingMaskIntoConstraints = false
-        self.itemLabel.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor).isActive = true
-        self.itemLabel.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor).isActive = true
+        self.itemLabel.topAnchor.constraint(equalTo: self.itemIcon.bottomAnchor, constant: 0).isActive = true
+        self.itemLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: 4).isActive = true
+        self.itemLabel.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 2).isActive = true
+        self.itemLabel.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -2).isActive = true
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(title: String, options: PageMenuOptions) {
+    func configure(item: SPMMenuItem, options: PageMenuOptions) {
         self.options = options
+        let width = options.menuItemSize.height * 0.55
+        self.iconWidthConstraint.constant = width
+        self.itemIcon.image = item.icon?.withRenderingMode(.alwaysTemplate)
         self.itemLabel.font = options.font
-        self.itemLabel.text = title
+        self.itemLabel.text = item.title
         self.itemLabel.invalidateIntrinsicContentSize()
         self.invalidateIntrinsicContentSize()
     }
@@ -129,6 +150,10 @@ extension TabMenuItemCell {
             from: options.menuTitleColor,
             to: options.menuTitleSelectedColor,
             with: progress)
+        self.itemIcon.tintColor = UIColor.interpolate(
+            from: options.menuTitleColor,
+            to: options.menuTitleSelectedColor,
+            with: progress)
     }
 
     func unHighlightTitle(progress: CGFloat = 1.0) {
@@ -137,6 +162,10 @@ extension TabMenuItemCell {
         }
 
         self.itemLabel.textColor = UIColor.interpolate(
+            from: options.menuTitleSelectedColor,
+            to: options.menuTitleColor,
+            with: progress)
+        self.itemIcon.tintColor = UIColor.interpolate(
             from: options.menuTitleSelectedColor,
             to: options.menuTitleColor,
             with: progress)

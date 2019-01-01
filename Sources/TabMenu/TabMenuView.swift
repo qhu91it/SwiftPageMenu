@@ -14,7 +14,7 @@ class TabMenuView: UIView {
     var pageItemPressedBlock: ((_ index: Int, _ direction: EMPageViewControllerNavigationDirection) -> Void)?
 
     /// tab menu titles
-    var pageTabItems: [String] = [] {
+    var pageTabItems: [SPMMenuItem] = [] {
         didSet {
             self.pageTabItemsCount = self.pageTabItems.count
             self.beforeIndex = self.pageTabItems.count
@@ -27,6 +27,8 @@ class TabMenuView: UIView {
     var isInfinite: Bool {
         return self.options.isInfinite
     }
+    
+    private var contentHeightConstraint: NSLayoutConstraint!
 
     var layouted: Bool = false
 
@@ -86,17 +88,19 @@ class TabMenuView: UIView {
         addSubview(self.contentView)
         self.contentView.translatesAutoresizingMaskIntoConstraints = false
         self.contentView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        self.contentView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
-        self.contentView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
-        self.contentView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
+        self.contentView.trailingAnchor.constraint(equalTo: self.trailingAnchor).isActive = true
+        self.contentView.leadingAnchor.constraint(equalTo: self.leadingAnchor).isActive = true
+        contentHeightConstraint = self.contentView.heightAnchor.constraint(equalToConstant: options.menuItemSize.height)
+        contentHeightConstraint.isActive = true
+//        self.contentView.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
 
         // collection view
         self.contentView.addSubview(self.collectionView)
         self.collectionView.register(TabMenuItemCell.self, forCellWithReuseIdentifier: TabMenuItemCell.cellIdentifier)
         self.collectionView.translatesAutoresizingMaskIntoConstraints = false
         self.collectionView.topAnchor.constraint(equalTo: self.contentView.topAnchor).isActive = true
-        self.collectionView.leftAnchor.constraint(equalTo: self.contentView.leftAnchor).isActive = true
-        self.collectionView.rightAnchor.constraint(equalTo: self.contentView.rightAnchor).isActive = true
+        self.collectionView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor).isActive = true
+        self.collectionView.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor).isActive = true
         self.collectionView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor).isActive = true
         self.cellForSize = TabMenuItemCell()
         self.collectionView.scrollsToTop = false
@@ -132,6 +136,11 @@ class TabMenuView: UIView {
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    public func reloadOptions(_ options: PageMenuOptions) {
+        self.options = options
+        contentHeightConstraint.constant = options.menuItemSize.height
     }
 }
 
@@ -393,7 +402,7 @@ extension TabMenuView: UICollectionViewDataSource {
 
     func configureCell(_ cell: TabMenuItemCell, indexPath: IndexPath) {
         let fixedIndex = self.isInfinite ? indexPath.item % self.pageTabItemsCount : indexPath.item
-        cell.configure(title: self.pageTabItems[fixedIndex], options: self.options)
+        cell.configure(item: self.pageTabItems[fixedIndex], options: self.options)
         if fixedIndex == (self.currentIndex % self.pageTabItemsCount) {
             cell.highlightTitle()
             cell.isDecorationHidden = false

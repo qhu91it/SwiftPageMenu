@@ -11,7 +11,12 @@ import UIKit
 open class PageMenuController: UIViewController {
 
     /// SwiftPageMenu configurations
-    public let options: PageMenuOptions
+    private var _options: PageMenuOptions
+    public var options: PageMenuOptions {
+        get {
+            return _options
+        }
+    }
 
     /// PageMenuController data source.
     open weak var dataSource: PageMenuControllerDataSource? {
@@ -27,14 +32,22 @@ open class PageMenuController: UIViewController {
     open internal(set) var viewControllers = [UIViewController]()
 
     /// The tab menu titles that are displayed in the page view controller.
-    open internal(set) var menuTitles = [String]()
+    open internal(set) var menuTitles = [SPMMenuItem]()
 
     /// Current page index
-    var currentIndex: Int? {
+    open var currentIndex: Int? {
         guard let viewController = self.pageViewController.selectedViewController else {
             return nil
         }
         return self.viewControllers.index(of: viewController)
+    }
+    
+    open var currentViewController: UIViewController? {
+        if let currentIndex = currentIndex,
+            viewControllers.count > currentIndex {
+            return viewControllers[currentIndex]
+        }
+        return nil
     }
 
     fileprivate lazy var pageViewController: EMPageViewController = {
@@ -71,6 +84,8 @@ open class PageMenuController: UIViewController {
 
         return tabView
     }()
+    
+    private var tabViewHeightConstraint: NSLayoutConstraint!
 
     fileprivate var beforeIndex: Int?
 
@@ -89,13 +104,23 @@ open class PageMenuController: UIViewController {
         return self.viewControllers.count
     }
 
+    /// Page scroll enabled
+    public var isScrollEnabled: Bool {
+        get {
+            return pageViewController.scrollView.isScrollEnabled
+        }
+        set {
+            pageViewController.scrollView.isScrollEnabled = newValue
+        }
+    }
+    
     /// The number of tab items
     fileprivate var tabItemCount: Int {
         return self.menuTitles.count
     }
 
     public init(options: PageMenuOptions? = nil) {
-        self.options = options ?? DefaultPageMenuOption()
+        _options = options ?? DefaultPageMenuOption()
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -104,7 +129,7 @@ open class PageMenuController: UIViewController {
     }
 
     public init?(coder: NSCoder, options: PageMenuOptions? = nil) {
-        self.options = options ?? DefaultPageMenuOption()
+        _options = options ?? DefaultPageMenuOption()
         super.init(coder: coder)
     }
 
@@ -126,6 +151,13 @@ open class PageMenuController: UIViewController {
         super.viewDidAppear(animated)
 
         self.tabView.layouted = true
+    }
+    
+    public func reloadOptions(_ options: PageMenuOptions) {
+        _options = options
+        let extraSpace = options.tabMenuPosition == .bottom ? extraBottomSpace() : 0
+        tabViewHeightConstraint.constant = options.menuItemSize.height + extraSpace
+        tabView.reloadOptions(options)
     }
 
     /**
@@ -269,7 +301,8 @@ open class PageMenuController: UIViewController {
 
             // setup tab view layout
             self.tabView.translatesAutoresizingMaskIntoConstraints = false
-            self.tabView.heightAnchor.constraint(equalToConstant: options.menuItemSize.height).isActive = true
+            self.tabViewHeightConstraint = self.tabView.heightAnchor.constraint(equalToConstant: options.menuItemSize.height)
+            self.tabViewHeightConstraint.isActive = true
             self.tabView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
             self.tabView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
 
@@ -299,16 +332,18 @@ open class PageMenuController: UIViewController {
 
             // setup tab view layout
             self.tabView.translatesAutoresizingMaskIntoConstraints = false
-            self.tabView.heightAnchor.constraint(equalToConstant: options.menuItemSize.height).isActive = true
-            self.tabView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
-            self.tabView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+            let extraSpace = options.tabMenuPosition == .bottom ? extraBottomSpace() : 0
+            self.tabViewHeightConstraint = self.tabView.heightAnchor.constraint(equalToConstant: options.menuItemSize.height + extraSpace)
+            self.tabViewHeightConstraint.isActive = true
+            self.tabView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+            self.tabView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
 
             // use layout guide or edge
             switch self.options.layout {
             case .layoutGuide:
                 if #available(iOS 11.0, *) {
                     self.pageViewController.view.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
-                    self.tabView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+                    self.tabView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
                 } else {
                     self.pageViewController.view.topAnchor.constraint(equalTo: self.topLayoutGuide.bottomAnchor).isActive = true
                     self.tabView.bottomAnchor.constraint(equalTo: self.bottomLayoutGuide.topAnchor).isActive = true
@@ -432,5 +467,17 @@ extension PageMenuController: EMPageViewControllerDataSource {
 
     func em_pageViewController(_ pageViewController: EMPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
         return nextViewController(viewController, isAfter: false)
+    }
+}
+
+extension PageMenuController {
+    func extraBottomSpace() -> CGFloat {
+        guard let root = UIApplication.shared.keyWindow?.rootViewController else { return 0 }
+        if root.isKind(of: UIViewController.self) {
+            if #available(iOS 11.0, *) {
+                return root.view.safeAreaInsets.bottom
+            }
+        }
+        return 0
     }
 }

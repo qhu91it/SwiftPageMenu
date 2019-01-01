@@ -85,7 +85,7 @@ class RootViewController: UITableViewController, UIGestureRecognizerDelegate {
             let pageViewController = PageTabMenuViewController(
                 items: items,
                 titles: tabTitles,
-                options: RoundRectPagerOption(isInfinite: true, tabMenuPosition: .custom))
+                options: RoundRectPagerOption(isInfinite: false, tabMenuPosition: .custom))
 
             pageViewController.navigationItem.title = self.titles[indexPath.row]
             self.navigationController?.pushViewController(pageViewController, animated: true)
