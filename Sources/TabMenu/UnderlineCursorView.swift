@@ -37,7 +37,7 @@ class UnderlineCursorView: UIView, TabMenuItemCursor {
             self.topAnchor.constraint(equalTo: parent.topAnchor, constant: options.menuItemSize.height - options.menuCursor.height).isActive = true
             self.currentBarViewWidthConstraint = self.widthAnchor.constraint(equalToConstant: 100)
             self.currentBarViewWidthConstraint?.isActive = true
-            self.currentBarViewLeftConstraint = self.leftAnchor.constraint(equalTo: parent.leftAnchor)
+            self.currentBarViewLeftConstraint = self.leadingAnchor.constraint(equalTo: parent.leadingAnchor)
             self.currentBarViewLeftConstraint?.isActive = true
         }
     }

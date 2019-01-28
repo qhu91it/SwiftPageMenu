@@ -296,15 +296,15 @@ open class PageMenuController: UIViewController {
             // setup page view controller layout
             self.pageViewController.view.translatesAutoresizingMaskIntoConstraints = false
             self.pageViewController.view.topAnchor.constraint(equalTo: self.tabView.bottomAnchor).isActive = true
-            self.pageViewController.view.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
-            self.pageViewController.view.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+            self.pageViewController.view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+            self.pageViewController.view.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
 
             // setup tab view layout
             self.tabView.translatesAutoresizingMaskIntoConstraints = false
             self.tabViewHeightConstraint = self.tabView.heightAnchor.constraint(equalToConstant: options.menuItemSize.height)
             self.tabViewHeightConstraint.isActive = true
-            self.tabView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
-            self.tabView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+            self.tabView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+            self.tabView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
 
             // use layout guide or edge
             switch self.options.layout {
@@ -326,8 +326,8 @@ open class PageMenuController: UIViewController {
 
             // setup page view controller layout
             self.pageViewController.view.translatesAutoresizingMaskIntoConstraints = false
-            self.pageViewController.view.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
-            self.pageViewController.view.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+            self.pageViewController.view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+            self.pageViewController.view.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
             self.pageViewController.view.bottomAnchor.constraint(equalTo: self.tabView.topAnchor).isActive = true
 
             // setup tab view layout
@@ -356,8 +356,8 @@ open class PageMenuController: UIViewController {
 
             // setup page view controller layout
             self.pageViewController.view.translatesAutoresizingMaskIntoConstraints = false
-            self.pageViewController.view.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
-            self.pageViewController.view.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+            self.pageViewController.view.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+            self.pageViewController.view.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
 
             // use layout guide or edge
             switch self.options.layout {

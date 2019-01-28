@@ -42,7 +42,7 @@ class RoundRectCursorView: UIView, TabMenuItemCursor {
             self.centerYAnchor.constraint(equalTo: parent.centerYAnchor).isActive = true
             self.currentBarViewWidthConstraint = self.widthAnchor.constraint(equalToConstant: 100)
             self.currentBarViewWidthConstraint?.isActive = true
-            self.currentBarViewLeftConstraint = self.leftAnchor.constraint(equalTo: parent.leftAnchor)
+            self.currentBarViewLeftConstraint = self.leadingAnchor.constraint(equalTo: parent.leadingAnchor)
             self.currentBarViewLeftConstraint?.isActive = true
         }
     }

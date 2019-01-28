@@ -66,7 +66,9 @@ class TabMenuView: UIView {
         layout.minimumInteritemSpacing = 10
 
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-
+        if #available(iOS 11.0, *) {
+            collectionView.contentInsetAdjustmentBehavior = .never
+        }
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.delegate = self
@@ -140,7 +142,9 @@ class TabMenuView: UIView {
     
     public func reloadOptions(_ options: PageMenuOptions) {
         self.options = options
+        self.backgroundColor = options.tabMenuBackgroundColor
         contentHeightConstraint.constant = options.menuItemSize.height
+        self.collectionView.reloadData()
     }
 }
 

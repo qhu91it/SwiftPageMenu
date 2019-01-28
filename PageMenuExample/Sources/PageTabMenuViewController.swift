@@ -41,8 +41,8 @@ class PageTabMenuViewController: PageMenuController {
             self.tabMenuView.translatesAutoresizingMaskIntoConstraints = false
 
             self.tabMenuView.heightAnchor.constraint(equalToConstant: self.options.menuItemSize.height).isActive = true
-            self.tabMenuView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
-            self.tabMenuView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+            self.tabMenuView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
+            self.tabMenuView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
             if #available(iOS 11.0, *) {
                 self.tabMenuView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
             } else {
