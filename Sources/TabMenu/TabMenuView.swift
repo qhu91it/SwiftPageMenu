@@ -60,7 +60,7 @@ class TabMenuView: UIView {
         return contentView
     }()
 
-    fileprivate lazy var collectionView: UICollectionView = {
+    fileprivate lazy var collectionView: UICollectionView = { [weak self] in
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .horizontal
         layout.minimumInteritemSpacing = 10
@@ -71,9 +71,11 @@ class TabMenuView: UIView {
         }
         collectionView.backgroundColor = .clear
         collectionView.showsHorizontalScrollIndicator = false
-        collectionView.delegate = self
-        collectionView.dataSource = self
-        collectionView.contentInset = self.options.tabMenuContentInset
+        if let strongself = self {
+            collectionView.delegate = strongself
+            collectionView.dataSource = strongself
+            collectionView.contentInset = strongself.options.tabMenuContentInset
+        }
 
         return collectionView
     }()

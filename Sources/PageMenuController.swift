@@ -39,7 +39,7 @@ open class PageMenuController: UIViewController {
         guard let viewController = self.pageViewController.selectedViewController else {
             return nil
         }
-        return self.viewControllers.index(of: viewController)
+        return self.viewControllers.firstIndex(of: viewController)
     }
     
     open var currentViewController: UIViewController? {
@@ -50,19 +50,19 @@ open class PageMenuController: UIViewController {
         return nil
     }
 
-    fileprivate lazy var pageViewController: EMPageViewController = {
+    fileprivate lazy var pageViewController: EMPageViewController = { [weak self] in
         let vc = EMPageViewController(navigationOrientation: .horizontal)
-
         vc.view.backgroundColor = .clear
-        vc.dataSource = self
-        vc.delegate = self
+        if let strongself = self {
+            vc.dataSource = strongself
+            vc.delegate = strongself
+        }
         vc.scrollView.backgroundColor = .clear
         if #available(iOS 11.0, *) {
             vc.scrollView.contentInsetAdjustmentBehavior = .never
         } else {
             vc.automaticallyAdjustsScrollViewInsets = false
         }
-
         return vc
     }()
 
@@ -188,6 +188,10 @@ open class PageMenuController: UIViewController {
     public func scrollToPrevious(animated: Bool, completion: ((Bool) -> Void)?) {
         self.pageViewController.scrollReverse(animated: animated, completion: completion)
     }
+    
+    public func tabViewScrollToHorizontalCenter() {
+        self.tabView.scrollToHorizontalCenter()
+    }
 
     /**
      Show page controller with index
@@ -302,6 +306,7 @@ open class PageMenuController: UIViewController {
             // setup tab view layout
             self.tabView.translatesAutoresizingMaskIntoConstraints = false
             self.tabViewHeightConstraint = self.tabView.heightAnchor.constraint(equalToConstant: options.menuItemSize.height)
+            self.tabViewHeightConstraint.priority = UILayoutPriority(999)
             self.tabViewHeightConstraint.isActive = true
             self.tabView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
             self.tabView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
@@ -334,6 +339,7 @@ open class PageMenuController: UIViewController {
             self.tabView.translatesAutoresizingMaskIntoConstraints = false
             let extraSpace = options.tabMenuPosition == .bottom ? extraBottomSpace() : 0
             self.tabViewHeightConstraint = self.tabView.heightAnchor.constraint(equalToConstant: options.menuItemSize.height + extraSpace)
+            self.tabViewHeightConstraint.priority = UILayoutPriority(999)
             self.tabViewHeightConstraint.isActive = true
             self.tabView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor).isActive = true
             self.tabView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor).isActive = true
@@ -343,7 +349,10 @@ open class PageMenuController: UIViewController {
             case .layoutGuide:
                 if #available(iOS 11.0, *) {
                     self.pageViewController.view.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
-                    self.tabView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+//                    self.tabView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+                    let pageViewBottom = self.tabView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
+                    pageViewBottom.priority = UILayoutPriority(999)
+                    pageViewBottom.isActive = true
                 } else {
                     self.pageViewController.view.topAnchor.constraint(equalTo: self.topLayoutGuide.bottomAnchor).isActive = true
                     self.tabView.bottomAnchor.constraint(equalTo: self.bottomLayoutGuide.topAnchor).isActive = true
@@ -364,7 +373,10 @@ open class PageMenuController: UIViewController {
             case .layoutGuide:
                 if #available(iOS 11.0, *) {
                     self.pageViewController.view.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor).isActive = true
-                    self.pageViewController.view.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+//                    self.pageViewController.view.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+                    let pageViewBottom = self.pageViewController.view.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor)
+                    pageViewBottom.priority = UILayoutPriority(999)
+                    pageViewBottom.isActive = true
                 } else {
                     self.pageViewController.view.topAnchor.constraint(equalTo: self.topLayoutGuide.bottomAnchor).isActive = true
                     self.pageViewController.view.bottomAnchor.constraint(equalTo: self.bottomLayoutGuide.topAnchor).isActive = true
@@ -439,7 +451,7 @@ extension PageMenuController: EMPageViewControllerDelegate {
 
 extension PageMenuController: EMPageViewControllerDataSource {
     private func nextViewController(_ viewController: UIViewController, isAfter: Bool) -> UIViewController? {
-        guard var index = viewControllers.index(of: viewController) else { return nil }
+        guard var index = viewControllers.firstIndex(of: viewController) else { return nil }
 
         if isAfter {
             index += 1
