@@ -21,6 +21,7 @@ class TabMenuItemCell: UICollectionViewCell {
 
         label.textAlignment = .center
         label.backgroundColor = .clear
+        label.numberOfLines = 2
 
         return label
     }()
@@ -32,6 +33,7 @@ class TabMenuItemCell: UICollectionViewCell {
     }()
     
     private var iconWidthConstraint: NSLayoutConstraint!
+    private var labelWidthConstraint: NSLayoutConstraint!
 
     var decorationView: UIView?
 
@@ -84,9 +86,12 @@ class TabMenuItemCell: UICollectionViewCell {
         self.contentView.addSubview(self.itemLabel)
         self.itemLabel.translatesAutoresizingMaskIntoConstraints = false
         self.itemLabel.topAnchor.constraint(equalTo: self.itemIcon.bottomAnchor, constant: 0).isActive = true
-        self.itemLabel.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor, constant: 4).isActive = true
-        self.itemLabel.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 2).isActive = true
-        self.itemLabel.trailingAnchor.constraint(equalTo: self.contentView.trailingAnchor, constant: -2).isActive = true
+        self.itemLabel.bottomAnchor.constraint(lessThanOrEqualTo: self.contentView.bottomAnchor, constant: 4).isActive = true
+//        self.itemLabel.leadingAnchor.constraint(lessThanOrEqualTo: self.contentView.leadingAnchor, constant: 2).isActive = true
+//        self.itemLabel.trailingAnchor.constraint(lessThanOrEqualTo: self.contentView.trailingAnchor, constant: -2).isActive = true
+        self.labelWidthConstraint = self.itemLabel.widthAnchor.constraint(equalToConstant: 80)
+        self.labelWidthConstraint.isActive = true
+        self.itemLabel.centerXAnchor.constraint(equalTo: self.contentView.centerXAnchor).isActive = true
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -95,8 +100,9 @@ class TabMenuItemCell: UICollectionViewCell {
 
     func configure(item: SPMMenuItem, options: PageMenuOptions) {
         self.options = options
-        let width = options.menuItemSize.height * 0.55
+        let width = options.menuItemSize.height * 0.4
         self.iconWidthConstraint.constant = width
+        self.labelWidthConstraint.constant = options.menuLabelWidth
         self.itemIcon.image = item.icon?.withRenderingMode(.alwaysTemplate)
         self.itemLabel.font = options.font
         self.itemLabel.text = item.title
